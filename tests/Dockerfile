@@ -1,4 +1,4 @@
-FROM quay.io/centos/centos:stream8
+FROM registry.redhat.io/openshift4/ose-cli:v4.14.0-202502191335.p0.g44b3ac2.assembly.stream.el8
 
 # List of chromedriver versions for download - https://chromedriver.chromium.org/downloads
 ARG CHROMEDRIVER_VER=104.0.5112.79
@@ -16,11 +16,6 @@ RUN dnf install -y bc git go-toolset python3-pip unzip && \
     cd $HOME/peak && \
     git submodule update --init
 
-RUN dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm &&\
-    echo -e "[google-chrome]\nname=google-chrome\nbaseurl=http://dl.google.com/linux/chrome/rpm/stable/x86_64\nenabled=1\ngpgcheck=1\ngpgkey=https://dl.google.com/linux/linux_signing_key.pub" > /etc/yum.repos.d/google-chrome.repo &&\
-    dnf -y install "google-chrome-stable" &&\
-    dnf clean all
-
 # install jq to help with parsing json
 RUN curl -o /usr/local/bin/jq http://stedolan.github.io/jq/download/linux64/jq && \
     chmod +x /usr/local/bin/jq
@@ -32,15 +27,6 @@ RUN mkdir -p $HOME/src && \
     git clone --depth=1 ${ODS_CI_REPO} ods-ci && cd ods-ci && \
     git fetch origin ${ODS_CI_GITREF} && git checkout FETCH_HEAD && \
     chmod -R 777 $HOME/src
-
-# Use a specific destination file name in case the url dow download name changes
-ADD ${OC_CLI_URL} $HOME/peak/oc-cli.tar.gz
-RUN tar -C /usr/local/bin -xvf $HOME/peak/oc-cli.tar.gz && \
-    chmod +x /usr/local/bin/oc
-
-RUN curl -o /tmp/chromedriver_linux64.zip -L https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VER}/chromedriver_linux64.zip &&\
-    unzip /tmp/chromedriver_linux64.zip &&\
-    cp chromedriver /usr/local/bin/chromedriver
 
 COPY setup/operatorsetup scripts/install.sh scripts/installandtest.sh $HOME/peak/
 COPY resources $HOME/peak/operator-tests/modelmesh/resources
@@ -58,6 +44,5 @@ RUN chmod -R 777 $HOME/kfdef && \
 
 # For local testing, you can add your own kubeconfig to the image
 # Note:  Do not push the image to a public repo with your kubeconfig
-# ADD kubeconfig /root/.kube/config
-
+#ADD kubeconfig /root/.kube/config
 CMD $HOME/peak/installandtest.sh
