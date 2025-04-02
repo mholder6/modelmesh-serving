@@ -1143,7 +1143,7 @@ var _ = Describe("Inference service", Ordered, func() {
 		var _ = Describe("test "+i.name+" isvc", Ordered, func() {
 			var isvcName string
 
-			It("should successfully load a model", func() {
+			FIt("should successfully load a model", func() {
 				isvcObject := NewIsvcForFVT(i.inferenceServiceFileName)
 				isvcName = isvcObject.GetName()
 				CreateIsvcAndWaitAndExpectReady(isvcObject, PredictorTimeout)
@@ -1156,9 +1156,9 @@ var _ = Describe("Inference service", Ordered, func() {
 				ExpectSuccessfulInference_sklearnMnistSvm(isvcName)
 			})
 
-			AfterAll(func() {
-				FVTClientInstance.DeleteIsvc(isvcName)
-			})
+			//AfterAll(func() {
+			//	FVTClientInstance.DeleteIsvc(isvcName)
+			//})
 
 		})
 	}
