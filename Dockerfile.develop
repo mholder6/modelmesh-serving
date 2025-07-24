@@ -21,7 +21,7 @@
 ###############################################################################
 # Create the develop, test, and build environment
 ###############################################################################
-ARG GOLANG_VERSION=1.22
+ARG GOLANG_VERSION=1.23
 FROM registry.access.redhat.com/ubi9/go-toolset:$GOLANG_VERSION
 
 
@@ -51,7 +51,7 @@ RUN --mount=type=cache,target=/root/.cache/dnf:rw \
        jq \
        python3.11 \
        python3.11-pip \
-    && alternatives --install /usr/bin/python python /usr/bin/python3.11 1 \
+    && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1 \
     && alternatives --install /usr/bin/pip pip /usr/bin/pip3.11 1 \
     && true
 
